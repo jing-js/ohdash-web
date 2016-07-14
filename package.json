@@ -1,0 +1,43 @@
+{
+  "name": "ohdash-web",
+  "version": "0.0.1",
+  "description": "ohdash web",
+  "author": "Yuhang Ge <abeyuhang@gmail.com>",
+  "license": "ISC",
+  "entry": {
+    "index": "./src/entry/index.js",
+    "text-panel": "./src/panels/text/index.js",
+    "image-panel": "./src/panels/image/index.js"
+  },
+  "externals": {
+    "ohdash": "ohdash",
+    "d3": "d3",
+    "less": "less",
+    "antd": "antd",
+    "react": "React",
+    "react-dom": "ReactDOM",
+    "react-router": "ReactRouter"
+  },
+  "dependencies": {
+    "antd": "^1.1.0",
+    "d3": "^3.5.17",
+    "jquery-ajax": "^2.1.4",
+    "koa-static": "^2.0.0",
+    "less": "^2.7.1",
+    "lodash": "^4.13.1",
+    "react": "^15.1.0",
+    "react-color": "^2.1.0",
+    "react-dom": "^15.1.0",
+    "react-router": "^2.4.1"
+  },
+  "devDependencies": {
+    "apack-build": "^1.0.0",
+    "apack-server": "^1.0.0",
+    "request": "^2.72.0"
+  },
+  "scripts": {
+    "dev": "apack-server --port 8088 --config ./scripts/dev.js --browser-history --live-reload",
+    "build": "apack-build -o ./dist"
+  },
+  "private": true
+}

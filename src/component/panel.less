@@ -1,0 +1,76 @@
+@ctrl-height: 30px;
+
+.ohdash-panel {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+
+  .title {
+    padding-left: 8px;
+    line-height: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  .body {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ctrl {
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    height: @ctrl-height;
+    line-height: @ctrl-height;
+    width: 100%;
+    transition: bottom 0.3s ease, top 0.3s ease;
+    color: #666;
+    text-align: right;
+
+    &.bottom {
+      bottom: -@ctrl-height;
+    }
+    &.top {
+      top: -@ctrl-height;
+    }
+
+    > .item {
+      display: inline-block;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 4px;
+
+      &:hover {
+        font-weight: bold;
+      }
+      &.resize {
+        transform-origin: center center;
+        transform: rotate(90deg);
+        padding: 0;
+        position: relative;
+        left: -1px;
+        top: 8px;
+      }
+    }
+  }
+
+  &:hover .ctrl {
+    &.bottom {
+      bottom: 0;
+    }
+    &.top {
+      top: 0;
+    }
+  }
+}
+
+.ohdash-panel.preview {
+  width: 60%;
+  height: 50%;
+  left: 20%;
+  top: 25%;
+}

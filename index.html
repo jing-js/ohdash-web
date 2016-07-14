@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard - DEMO</title>
+
+  <link rel="stylesheet" type="text/css" href="/antd.min.css"/>
+  <link rel="stylesheet" type="text/css" href="/index.css"/>
+
+  <!-- plugins -->
+  <link rel="stylesheet" type="text/css" href="/text-panel.css"/>
+  <link rel="stylesheet" type="text/css" href="/image-panel.css"/>
+
+  <style id="splash-style">
+    #splash {
+      background: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999;
+    }
+    #splash p {
+      text-align: center;
+      font-size: 16px;
+      padding: 15px;
+    }
+  </style>
+</head>
+<body>
+<div id="react-content"></div>
+<div id="splash">
+  <p>Loading</p>
+</div>
+</body>
+<script src="/d3.js"></script>
+<script src="/react.js"></script>
+<script src="/react-dom.js"></script>
+<script src="/ReactRouter.js"></script>
+<script src="/antd.min.js"></script>
+<script src="/less.js"></script>
+<script src="/index.js"></script>
+
+<!-- plugins -->
+<script src="/text-panel.js"></script>
+<script src="/image-panel.js"></script>
+
+<!-- bootstrap -->
+<script>
+  ohdash.bootstrap(document.getElementById('react-content'));
+</script>
+</html>

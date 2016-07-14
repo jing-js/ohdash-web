@@ -1,0 +1,48 @@
+@main-padding: 13px;
+@nav-height: 50px;
+@menu-width: 90px;
+
+body {
+  background-color: #fafafa;
+}
+
+body, #react-content, #app {
+  height: 100vh;
+  width: 100vw;
+}
+
+#app > .nav {
+  height: @nav-height;
+  line-height: @nav-height;
+  padding: 0 @main-padding;
+}
+
+#app > .dash {
+  position: relative;
+  min-height: ~'calc(100vh - @{nav-height})';
+  width: 100vw;
+}
+
+#app > .menu {
+  position: fixed;
+  top: @nav-height + 3px;
+  right: -@menu-width;
+  transition: right 0.3s ease;
+  z-index: 9999;
+  .menu-inner {
+    width: @menu-width;
+  }
+
+  &.expand {
+    right: 0;
+  }
+}
+
+#app.fs {
+  > .nav {
+    display: none;
+  }
+  > .dash {
+    min-height: 100vh;
+  }
+}
