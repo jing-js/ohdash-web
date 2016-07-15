@@ -3,11 +3,18 @@
 .ohdash-panel {
   position: absolute;
   overflow: hidden;
-  border-radius: 2px;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
 
+  .panel-inner {
+    flex: 1;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
   .title {
     padding-left: 8px;
     line-height: 30px;
@@ -58,7 +65,26 @@
     }
   }
 
+
+  &.moving {
+    transition: none;
+  }
   &:hover .ctrl {
+    &.bottom {
+      bottom: 0;
+    }
+    &.top {
+      top: 0;
+    }
+  }
+  &.moving {
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    .ctrl {
+      transition: none;
+    }
     &.bottom {
       bottom: 0;
     }

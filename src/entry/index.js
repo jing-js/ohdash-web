@@ -25,6 +25,15 @@ const ohdash = {
       $remove($id('splash-style'));
 
       ReactDom.render(Router, ele);
+
+      setTimeout(() => {
+        dashboard.addPanel(new dashboard._panelClasses[0]());
+        dashboard.addPanel(new dashboard._panelClasses[0]());
+
+        setTimeout(() => {
+          dashboard.editPanel = null;
+        })
+      })
     });
   }
 };

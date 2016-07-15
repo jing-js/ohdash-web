@@ -6,6 +6,7 @@ import {
   POSITION_ATTRS,
   POSITION_ATTR_NAMES
 } from './constants';
+import EventEmitter from './EventEmitter';
 import Rect from './Rect';
 import LayoutItem from './LayoutItem';
 
@@ -44,9 +45,9 @@ const POSITION_ATTR_CALC = {
   height: 'bottom - top'
 };
 
-class Dashboard {
+class Dashboard extends EventEmitter {
   constructor() {
-    this._listeners = new Map();
+    super();
     this._$ele = null;
     this.panels = [];
     this._panelMap = {};
@@ -58,7 +59,7 @@ class Dashboard {
     this._dataSourceClasses = [];
     this._exprFnCache = new Map();
     this.attr = {
-      css: 'padding: 13px'
+      css: 'padding: 7px'
     };
     this.__positionCalcContext__ = {
       WIDTH: 0,
@@ -71,39 +72,7 @@ class Dashboard {
       height: 0
     };
   }
-  on(eventName, handler) {
-    let arr = this._listeners.get(eventName);
-    if (!arr) {
-      arr = [];
-      this._listeners.set(eventName, arr);
-    }
-    if (arr.indexOf(handler) < 0) {
-      arr.push(handler);
-    }
-  }
-  emit(eventName, ...args) {
-    let arr = this._listeners.get(eventName);
-    if (!arr) {
-      return;
-    }
-    arr.forEach(handler => {
-      handler(...args);
-    });
-  }
-  off(eventName, handler) {
-    let arr = this._listeners.get(eventName);
-    if (!arr) {
-      return;
-    }
-    if (!handler) {
-      arr.length = 0;
-    } else {
-      let i = arr.indexOf(handler);
-      if (i >= 0) {
-        arr.splice(i, 1);
-      }
-    }
-  }
+  
   attachDOM($dashboard) {
     if (this._$ele) {
       throw new Error('dashboard has already been attached.')
@@ -173,7 +142,8 @@ class Dashboard {
         my = pos.bottom;
       }
     }
-    return new Rect(0, my > 0 ? my + 13 : my, Math.floor(this.width / 3), Math.floor(this.width /3 * 0.8));
+    let w = this.width / 8;
+    return new Rect(0, my, w, w * 0.6);
   }
   _initPanel(panel) {
     let rect = this._getSuggestRect();

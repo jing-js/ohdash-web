@@ -2,6 +2,93 @@
 
   .dash-inner {
     position: relative;
+    flex: 1;
+  }
+
+  .dash-helper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    > .hint-line {
+      user-select: none;
+      -webkit-user-select: none;
+      position: absolute;
+      background: #2196F3;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+      z-index: 9999;
+
+      .title {
+        white-space: nowrap;
+        display: inline-block;
+        line-height: 1;
+        color: #2196F3;
+        font-size: 10px;
+        position: relative;
+      }
+
+      &.hor {
+        left: 0;
+        height: 1px;
+        text-align: center;
+
+        .title {
+          top: -18px;
+        }
+      }
+
+      &.ver {
+        top: 0;
+        width: 1px;
+
+        .title {
+          left: 6px;
+        }
+      }
+      @tip-length: 9px;
+
+      &.tail {
+        &:before, &:after {
+          content: '';
+          position: absolute;
+          background: #2196F3;
+        }
+        &.hor {
+          &:before, &:after {
+            height: @tip-length;
+            width: 1px;
+            top: 0 - floor(@tip-length / 2);
+          }
+          &:before {
+            left: 0;
+          }
+          &:after {
+            left: 100%;
+          }
+        }
+        &.ver {
+          &:before, &:after {
+            width: @tip-length;
+            height: 1px;
+            left: -@tip-length / 2;
+          }
+          &:before {
+            top: 0;
+          }
+          &:after {
+            top: 100%;
+          }
+        }
+      }
+
+      &.show {
+        opacity: 1;
+      }
+
+    }
   }
 
 }

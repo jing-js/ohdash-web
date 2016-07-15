@@ -19,7 +19,12 @@ class Panel extends LayoutItem {
       bottom: '',
       height: '',
       title: '新建面板',
-      less: `background: #fff;\nbox-shadow: 0 1px 1px rgba(0,0,0,.15);`
+      less: `
+> .panel-inner {
+  margin: 7px;
+  background: #fff;
+  box-shadow: 0 1px 1px rgba(0,0,0,.15);
+}`
     };
     this.expr = {
       __sequence: null,
@@ -36,11 +41,15 @@ class Panel extends LayoutItem {
     this.css = '';
     
     this.position = new Rect();
-
-    this._eventTag = {
-      isDown: false,
-      moveHandler: null,
-      upHandler: null
+    this.layoutAttach = {
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0,
+      leftEnable: false,
+      topEnable: false,
+      widthEnable: false,
+      heightEnable: false
     }
   }
   get name() {
@@ -116,52 +125,6 @@ class Panel extends LayoutItem {
   }
   renderDataSourceTab() {
     return 'renderDataSourceTab is abstract function, you must override it';
-  }
-  onMoveDown(evt) {
-    console.log(evt.nativeEvent);
-  }
-  onMoveMove() {
-
-  }
-  onMoveUp() {
-
-  }
-  onSettingDown(evt) {
-    this.dashboard.editPanel = this;
-    evt.stopPropagation();
-  }
-  onDeleteDown(evt) {
-    this.dashboard.removePanel(this);
-    evt.stopPropagation();
-  }
-  render() {
-    let style = {
-      left: this.position.left | 0,
-      top: this.position.top | 0,
-      width: this.position.width | 0,
-      height: this.position.height | 0
-    };
-    return (
-      <div key={this.id} id={this.domId} style={style} className={`ohdash-panel ${this.className}`}>
-        <div style={{cursor: 'move'}} onMouseDown={this.onMoveDown.bind(this)} className="ctrl top">
-          <Icon type="setting" onMouseDown={this.onSettingDown.bind(this)} className="item setting"/>
-          <Icon type="delete" onMouseDown={this.onDeleteDown.bind(this)} className="item remove"/>
-        </div>
-        {
-          this.attr.title ? (
-            <div className="title">
-              {this.attr.title}
-            </div>
-          ) : undefined
-        }
-        <div className="body">
-          {this.renderBody()}
-        </div>
-        <div className="ctrl bottom">
-          <Icon type="arrow-salt" className="item resize"/>
-        </div>
-      </div>
-    )
   }
 }
 

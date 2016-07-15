@@ -56,3 +56,11 @@ export function removeIfNeed(arr, item) {
     arr.splice(i, 1);
   }
 }
+
+export function reduceFraction(numerator,denominator){
+  let gcd = function gcd(a,b){
+    return b ? gcd(b, a%b) : a;
+  };
+  gcd = gcd(numerator,denominator);
+  return [numerator/gcd, denominator/gcd];
+}

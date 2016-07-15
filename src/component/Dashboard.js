@@ -1,10 +1,10 @@
 import React from 'react';
-import Panel from '../struct/Panel';
 import dashboard from '../struct/Dashboard';
-import { PANEL_CSS_ID_REPLACE_HOLDER, PANEL_CSS_ID_REPLACE_REGEXP } from '../struct/constants';
+import layoutHelper from '../struct/LayoutHelper';
 import PanelEditor from './PanelEditor';
-import { parseLess, appendCssStyle, $id } from '../common/util';
-import { DASHBOARD_STYLE_ID, DASHBOARD_ID } from '../struct/constants';
+import Panel from './Panel';
+import { DASHBOARD_ID } from '../struct/constants';
+import LayoutHelper  from './LayoutHelper';
 import "./dashboard.less";
 import "./panel.less";
 
@@ -27,7 +27,10 @@ export default class Dashboard extends React.Component {
     dashboard.on('panel-removed', this.onPanelRemovedHandler);
     dashboard.on('edit-panel-changed', this.onEditPanelChangedHandler);
     // dashboard.attachDOM(this.refs.dashboard);
-    dashboard.resize(this.refs.dashboard.offsetWidth, this.refs.dashboard.offsetHeight);
+    let w = this.refs.dashboard.offsetWidth;
+    let h = this.refs.dashboard.offsetHeight;
+    dashboard.resize(w, h);
+    layoutHelper.resize(w, h);
     window.addEventListener('resize', this.onResizeHandler);
   }
   componentWillUnmount() {
@@ -39,7 +42,10 @@ export default class Dashboard extends React.Component {
   }
   _doResize() {
     this._resizeTM = null;
-    dashboard.resize(this.refs.dashboard.offsetWidth, this.refs.dashboard.offsetHeight);
+    let w = this.refs.dashboard.offsetWidth;
+    let h = this.refs.dashboard.offsetHeight;
+    dashboard.resize(w, h);
+    layoutHelper.resize(w, h);
     this.setState({});
   }
   onResize() {
@@ -62,10 +68,11 @@ export default class Dashboard extends React.Component {
   }
   render() {
     return (
-      <div ref="dashboard" className="dash" id={DASHBOARD_ID}>
-        <div className="dash-inner" style={{display: dashboard.editPanel ? 'none' : 'block'}}>
+      <div className="dash" id={DASHBOARD_ID}>
+        <div className="dash-inner" ref="dashboard" style={{display: dashboard.editPanel ? 'none' : 'block'}}>
+          <LayoutHelper/>
           {dashboard.panels.map(panel => {
-            return panel.render();
+            return <Panel key={panel.id} dashboard={dashboard} model={panel}/>
           })}
         </div>
         {
