@@ -41,16 +41,16 @@ class Panel extends LayoutItem {
     this.css = '';
     
     this.position = new Rect();
-    this.layoutAttach = {
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0,
-      leftEnable: false,
-      topEnable: false,
-      widthEnable: false,
-      heightEnable: false
-    }
+    // this.layoutAttach = {
+    //   left: 0,
+    //   top: 0,
+    //   width: 0,
+    //   height: 0,
+    //   leftEnable: false,
+    //   topEnable: false,
+    //   widthEnable: false,
+    //   heightEnable: false
+    // }
   }
   get name() {
     return this.attr.name;
