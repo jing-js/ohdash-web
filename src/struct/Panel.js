@@ -119,9 +119,6 @@ class Panel extends EventEmitter {
   renderContentTab() {
     return 'renderContentTab is abstract function, you must override it';
   }
-  renderDataSourceTab() {
-    return 'renderDataSourceTab is abstract function, you must override it';
-  }
 }
 
 extendProto(LayoutItem, Panel);

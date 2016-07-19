@@ -376,6 +376,7 @@ class Dashboard extends EventEmitter {
     if (checkExists(this._dataSourceClasses, DataSourceClass)) {
       throw new Error(`DataSource ${DataSourceClass.name} is already exists.`);
     }
+    console.log('reg ds')
     this._dataSourceClasses.push(DataSourceClass);
   }
 }

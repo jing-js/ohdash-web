@@ -3,7 +3,7 @@ import { Alert, Input } from 'antd';
 
 import './index.less';
 
-class TextPanel extends ohdash.BasePanel {
+export default class TextPanel extends ohdash.BasePanel {
   static displayName = '文本面板';
   constructor(dashboard) {
     super(dashboard);
@@ -46,11 +46,6 @@ class TextPanel extends ohdash.BasePanel {
       </div>
     );
   }
-  renderDataSourceTab() {
-    return 'This is TextPanel\'s DataSourceTab';
-  }
 }
 
 ohdash.registerPanel(TextPanel);
-
-export default TextPanel;

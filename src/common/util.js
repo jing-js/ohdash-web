@@ -67,7 +67,6 @@ export function reduceFraction(numerator,denominator){
 
 export function extendProto(src, dst) {
   for(let k in src.prototype) {
-    console.log(k)
     if (!dst.prototype.hasOwnProperty(k)) {
       dst.prototype[k] = src.prototype[k];
     }

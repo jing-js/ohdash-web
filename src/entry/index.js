@@ -28,11 +28,11 @@ const ohdash = {
 
       setTimeout(() => {
         dashboard.addPanel(new dashboard._panelClasses[0]());
-        dashboard.addPanel(new dashboard._panelClasses[0]());
-
-        setTimeout(() => {
-          dashboard.editPanel = null;
-        })
+        // dashboard.addPanel(new dashboard._panelClasses[0]());
+        //
+        // setTimeout(() => {
+        //   dashboard.editPanel = null;
+        // })
       })
     });
   }

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Tabs, Button, Form, Input, Alert, Icon } from 'antd';
+import { Tabs, Button, Form, Input, Alert, Icon, Select } from 'antd';
 const TabPane = Tabs.TabPane;
+const Option = Select.Option;
 const FormItem = Form.Item;
 import dashboard from '../struct/Dashboard';
 import { parseLess } from '../common/util';
@@ -17,7 +18,7 @@ export default class PanelEditor extends React.Component {
     this.state = {
       _error: null,
       _lessState: 0, // 0: ready, 1: busy, 2: willRedo
-      tab: 'content',
+      tab: 'data',
       attr: {
         left: attr.left,
         right: attr.right,
@@ -28,22 +29,20 @@ export default class PanelEditor extends React.Component {
         name: attr.name,
         title: attr.title,
         less: attr.less,
-        script: attr.script
+        script: attr.script,
+        dataSource: undefined
       }
     };
     this._formTM = null;
     this._onUpdateHandler = this._onUpdate.bind(this);
-    console.log('new pe')
   }
   _onUpdate() {
     this.setState({});
   }
   componentDidMount() {
-    console.log('mmm')
     this.panel.on('update', this._onUpdateHandler);
   }
   componentWillUnmount() {
-    console.log('off')
     this.panel && this.panel.off('update', this._onUpdateHandler);
   }
   onTabChange(tab) {
@@ -174,7 +173,6 @@ export default class PanelEditor extends React.Component {
     }, 800);
   }
   _checkPos() {
-    console.log('_check pos');
     this._formTM = null;
     let c = 0;
     let changed = false;
@@ -212,6 +210,15 @@ export default class PanelEditor extends React.Component {
     }
     let err = this.dashboard.updatePanelPos(this.panel, this.state.attr);
     return err ? err : null;
+  }
+  onDataSourceChange(ds) {
+    let attr = this.state.attr;
+    this.panel.dataSource = new ds();
+    attr.dataSource = ds;
+    this.setState({
+      _error: null,
+      attr
+    });
   }
   render() {
     const curTab = this.state.tab;
@@ -282,9 +289,19 @@ export default class PanelEditor extends React.Component {
           </div>
         </div>
         <div style={curTab !== 'data' ? {display: 'none'} : null} className="tab-panel data">
-          <p>选择数据源</p>
+          <div>
+            <Select style={{width: 200}} value={attr.dataSource} onChange={this.onDataSourceChange.bind(this)} placeholder="选择数据源">
+              {
+                this.dashboard._dataSourceClasses.map(ds => (
+                  <Option key={ds.name} value={ds}>{ds.displayName}</Option>
+                ))
+              }
+            </Select>
+          </div>
           {
-            panel.renderDataSourceTab()
+            panel.dataSource ? panel.dataSource.render() : (
+              <p className="empty-tip">请先选择数据源</p>
+            )
           }
         </div>
         <div style={curTab !== 'css' ? {display: 'none'} : null} className="tab-panel css">

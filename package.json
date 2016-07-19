@@ -6,8 +6,10 @@
   "license": "ISC",
   "entry": {
     "index": "./src/entry/index.js",
-    "text-panel": "./src/panels/text/index.js",
-    "image-panel": "./src/panels/image/index.js"
+    "text-panel": "./panels/text/index.js",
+    "image-panel": "./panels/image/index.js",
+    "common-datasource": "./datasources/common/index.js",
+    "es-datasource": "./datasources/elasticsearch/index.js"
   },
   "externals": {
     "ohdash": "ohdash",
@@ -19,7 +21,7 @@
     "react-router": "ReactRouter"
   },
   "dependencies": {
-    "antd": "^1.1.0",
+    "antd": "^1.6.5",
     "d3": "^3.5.17",
     "jquery-ajax": "^2.1.4",
     "koa-static": "^2.0.0",
