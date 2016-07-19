@@ -64,3 +64,13 @@ export function reduceFraction(numerator,denominator){
   gcd = gcd(numerator,denominator);
   return [numerator/gcd, denominator/gcd];
 }
+
+export function extendProto(src, dst) {
+  for(let k in src.prototype) {
+    console.log(k)
+    if (!dst.prototype.hasOwnProperty(k)) {
+      dst.prototype[k] = src.prototype[k];
+    }
+  }
+  return src;
+}

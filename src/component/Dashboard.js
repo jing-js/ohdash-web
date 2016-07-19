@@ -19,6 +19,8 @@ export default class Dashboard extends React.Component {
     this.onEditPanelChangedHandler = this.onEditPanelChanged.bind(this);
     this.onPanelRemovedHandler = this.onPanelRemoved.bind(this);
     this.onResizeHandler = this.onResize.bind(this);
+    this.onPanelMDHandler = this.onPanelMD.bind(this);
+    this.onPanelMUHandler = this.onPanelMU.bind(this);
     this._resizeTM = null;
     this._doResizeHandler = this._doResize.bind(this);
   }
@@ -26,7 +28,6 @@ export default class Dashboard extends React.Component {
     dashboard.on('panel-added', this.onPanelAddedHandler);
     dashboard.on('panel-removed', this.onPanelRemovedHandler);
     dashboard.on('edit-panel-changed', this.onEditPanelChangedHandler);
-    // dashboard.attachDOM(this.refs.dashboard);
     let w = this.refs.dashboard.offsetWidth;
     let h = this.refs.dashboard.offsetHeight;
     dashboard.resize(w, h);
@@ -55,16 +56,23 @@ export default class Dashboard extends React.Component {
     this._resizeTM = setTimeout(this._doResizeHandler, 500);
   }
   onPanelAdded(panel) {
-    panel._setStateCallback = () => {
-      this.setState({})
-    };
+    panel.on('mousedown', this.onPanelMDHandler);
+    panel.on('mouseup', this.onPanelMUHandler);
     this.setState({});
   }
   onEditPanelChanged(editPanel) {
     this.setState({});
   }
   onPanelRemoved(panel) {
+    panel.off('mousedown', this.onPanelMDHandler);
+    panel.off('mouseup', this.onPanelMUHandler);
     this.setState({});
+  }
+  onPanelMD() {
+    this.refs.dashboard.className += ' md';
+  }
+  onPanelMU() {
+    this.refs.dashboard.className = this.refs.dashboard.className.replace(/\bmd\b/, '').replace(/\s+/, ' ').trim();
   }
   render() {
     return (

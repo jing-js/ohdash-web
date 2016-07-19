@@ -32,6 +32,19 @@ export default class PanelEditor extends React.Component {
       }
     };
     this._formTM = null;
+    this._onUpdateHandler = this._onUpdate.bind(this);
+    console.log('new pe')
+  }
+  _onUpdate() {
+    this.setState({});
+  }
+  componentDidMount() {
+    console.log('mmm')
+    this.panel.on('update', this._onUpdateHandler);
+  }
+  componentWillUnmount() {
+    console.log('off')
+    this.panel && this.panel.off('update', this._onUpdateHandler);
   }
   onTabChange(tab) {
     if (tab !== 'title') {
@@ -105,7 +118,13 @@ export default class PanelEditor extends React.Component {
     let val = evt.target.value;
     let attr = this.state.attr;
     attr.name = val;
-
+    if (!val.trim()) {
+      this.setState({
+        _error: '名称不能为空',
+        attr
+      });
+      return;
+    }
     if (/(left|right|top|bottom|width|height|WIDTH|HEIGHT)/.test(val.trim())) {
       this.setState({
         _error: `不能使用${val.trim()}作为面板名称`,
@@ -121,6 +140,7 @@ export default class PanelEditor extends React.Component {
     });
   }
   onClose() {
+    this.panel.off('update', this._onUpdateHandler);
     this.panel = null;
     this.state.attr = null;
     // editPanel setter will emit 'panel-changed' event to Dashboard

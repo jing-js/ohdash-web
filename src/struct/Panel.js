@@ -2,16 +2,22 @@ import React from 'react';
 import { Icon } from 'antd';
 import Rect from './Rect';
 import LayoutItem from './LayoutItem';
+import NameManager from './NameManager';
+import EventEmitter from './EventEmitter';
+import { extendProto } from '../common/util';
 
 let autoId = 0;
 
-class Panel extends LayoutItem {
+class Panel extends EventEmitter {
   constructor(dashboard) {
     super();
-    this.dashboard = dashboard;
+
+    LayoutItem.call(this);
+
     this.id = (autoId++).toString(36);
+    this.dashboard = dashboard;
     this.attr = {
-      name: '',
+      name: NameManager.generate(),
       left: '',
       right: '',
       width: '',
@@ -37,20 +43,10 @@ class Panel extends LayoutItem {
     };
 
     this.dataSource = null;
-    this._setStateCallback = null;
     this.css = '';
     
     this.position = new Rect();
-    // this.layoutAttach = {
-    //   left: 0,
-    //   top: 0,
-    //   width: 0,
-    //   height: 0,
-    //   leftEnable: false,
-    //   topEnable: false,
-    //   widthEnable: false,
-    //   heightEnable: false
-    // }
+
   }
   get name() {
     return this.attr.name;
@@ -127,5 +123,7 @@ class Panel extends LayoutItem {
     return 'renderDataSourceTab is abstract function, you must override it';
   }
 }
+
+extendProto(LayoutItem, Panel);
 
 export default Panel;

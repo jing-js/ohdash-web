@@ -1,7 +1,6 @@
 import React from 'react';
 import { Icon } from 'antd';
 import Point from '../struct/Point';
-import LayoutItem from '../struct/LayoutItem';
 import layoutHelper from '../struct/LayoutHelper';
 
 export default class Panel extends React.Component {
@@ -17,7 +16,17 @@ export default class Panel extends React.Component {
       moveHandler: null,
       upHandler: null
     };
-    
+
+    this._onUpdateHandler = this._onUpdate.bind(this);
+  }
+  _onUpdate() {
+    this.setState({});
+  }
+  componentDidMount() {
+    this.props.model.on('update', this._onUpdateHandler);
+  }
+  componentWillUnmount() {
+    this.props.model.off('update', this._onUpdateHandler);
   }
   _onMouseDown(evt) {
     let et = this._eventTag;
@@ -26,6 +35,7 @@ export default class Panel extends React.Component {
     }
     et.isDown = true;
     et.downPoint.set(evt.pageX, evt.pageY);
+    this.props.model.emit('mousedown', et.downPoint);
   }
   onMoveDown(evt) {
     this._onMouseDown(evt);
@@ -56,33 +66,32 @@ export default class Panel extends React.Component {
     this._onMouseMove(evt);
     let panel = this.props.model;
     let et = this._eventTag;
-    layoutHelper.movePanel(panel, evt.metaKey || evt.ctrlKey, et.downPosition.x + et.delta.x, et.downPosition.y + et.delta.y);
+    layoutHelper.move(panel, evt.metaKey || evt.ctrlKey, et.downPosition.x + et.delta.x, et.downPosition.y + et.delta.y);
     this.setState({});
   }
   onSizeMove(evt) {
     this._onMouseMove(evt);
     let panel = this.props.model;
     let et = this._eventTag;
-    layoutHelper.sizePanel(panel, evt.metaKey || evt.ctrlKey, et.downPosition.x + et.delta.x, et.downPosition.y + et.delta.y);
+    layoutHelper.size(panel, evt.metaKey || evt.ctrlKey, et.downPosition.x + et.delta.x, et.downPosition.y + et.delta.y);
     this.setState({});
   }
   _onMouseUp() {
     let et = this._eventTag;
     document.removeEventListener('mousemove', et.moveHandler);
     document.removeEventListener('mouseup', et.upHandler);
+    et.isMoving &&  this._afterMove();
     et.isMoving = false;
     et.isDown = false;
     et.moveHandler = null;
     et.upHandler = null;
-    this._afterMove();
+    this.props.model.emit('mouseup');
   }
   onMoveUp(evt) {
     this._onMouseUp();
-    this.setState({});
   }
   onSizeUp(evt) {
     this._onMouseUp();
-    this.setState({});
   }
   onSettingDown(evt) {
     this.props.dashboard.editPanel = this.props.model;
@@ -92,39 +101,42 @@ export default class Panel extends React.Component {
     this.props.dashboard.removePanel(this.props.model);
     evt.stopPropagation();
   }
-  _afterMove() {
-    // let panel = this.props.model;
-    // let att = panel.layoutAttach;
+  _updateMove(calcPosition = false) {
+    // const cache = new WeakMap();
+    // const dashboard = this.props.dashboard;
+    this.props.model.dependents.forEach(update);
 
+    function update(panel) {
+      // if (cache.has(panel)) {
+      //   return;
+      // }
+      // if (calcPosition) {
+      //   dashboard._calcPosition(panel);
+      // }
+      panel.emit('update');
+      // cache.set(panel, true);
+      for(let i = 0; i < panel.dependents.length; i++) {
+        update(panel.dependents[i]);
+      }
+    }
+  }
+  _afterMove() {
+    let err = this.props.dashboard.updatePanelPos(this.props.model, layoutHelper.expr, true);
+    if (err) {
+      console.log(err);
+    }
+    this._updateMove();
     layoutHelper.clear();
 
-    // if (att.leftEnable) {
-    //   panel.left = att.left;
-    // }
-    // if (att.topEnable) {
-    //   panel.top = att.top;
-    // }
-    // panel.right = panel.left + panel.width;
-    // panel.bottom = panel.top + panel.height;
-    // panel.dependents.forEach(dPanel => {
-    //   dPanel.layoutState = LayoutItem.LAYOUT_STATE.CALC;
-    // });
-    // todo layout depentes
   }
   render() {
     let panel = this.props.model;
-    // let style = {
-    //   left: (panel.layoutAttach.leftEnable ? panel.layoutAttach.left : panel.position.left) | 0,
-    //   top: (panel.layoutAttach.topEnable ? panel.layoutAttach.top : panel.position.top) | 0,
-    //   width: (panel.layoutAttach.widthEnable ? panel.layoutAttach.width : panel.position.width) | 0,
-    //   height: (panel.layoutAttach.heightEnable ? panel.layoutAttach.height : panel.position.height) | 0,
-    // };
     let style = {
       left: panel.left | 0,
       top: panel.top | 0,
       width: panel.width | 0,
       height: panel.height | 0
-    }
+    };
     return (
       <div id={panel.domId} style={style} className={`ohdash-panel ${panel.className}${this._eventTag.isMoving ? ' moving' : ''}`}>
         <div className="panel-inner">

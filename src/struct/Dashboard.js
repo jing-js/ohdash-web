@@ -27,7 +27,6 @@ const POSITION_LAYOUT_ITEMS = (function () {
     POSITION_ATTRS.forEach(attr => {
       r[attr].dependencies.length = 0;
       r[attr].dependents.length = 0;
-      r[attr].layoutState = LayoutItem.LAYOUT_STATE.CALC;
     });
   };
   r.__toArray = function () {
@@ -154,12 +153,16 @@ class Dashboard extends EventEmitter {
     panel.expr.__sequence = POSITION_ATTRS;
     POSITION_ATTRS.forEach(attr => {
       let expr = panel.attr[attr];
-      panel.expr[attr] = this._parseExprFn(expr ? expr : POSITION_ATTR_CALC[attr]);
+      panel.expr[attr] = this._parseExprFn(expr ? expr : POSITION_ATTR_CALC[attr].replace(/\w+/g, m => `__ohdash__.${m}`));
     });
     panel.position.right = rect.left + rect.width;
     panel.position.bottom = rect.top + rect.height;
     this.panels.push(panel);
-    panel.layoutState = LayoutItem.LAYOUT_STATE.STABLE;
+    if (this._panelMap[panel.name]) {
+      throw new Error(`panel ${panel.name} already exists`);
+    }
+    this._panelMap[panel.name] = panel;
+    this.__positionCalcContext__[panel.name] = panel.position;
   }
   _updatePreviewCssStyle(panel) {
     let $s = $id(PANEL_PREVIEW_STYLE_ID);
@@ -203,7 +206,7 @@ class Dashboard extends EventEmitter {
     }
     this.emit('panel-removed', panel);
   }
-  _parsePosAttrs(panel, vAttrs) {
+  _parsePosAttrs(panel, vAttrs, ignoreCircle = false) {
     POSITION_LAYOUT_ITEMS.__reset();
     let exprFn = {};
     let deps = [];
@@ -213,7 +216,7 @@ class Dashboard extends EventEmitter {
       if (!expr) {
         expr = POSITION_ATTR_CALC[attr];
       }
-
+      let circleReset = false;
       expr = expr.replace(DEP_REGEXP, (m0, m1, m2) => {
         let dep = this._panelMap[m1];
         if (!dep) {
@@ -222,11 +225,30 @@ class Dashboard extends EventEmitter {
         if (dep === panel) {
           throw new Error(`${POSITION_ATTR_NAMES[attr]}不应该依赖自身。你可以直接使用${m2}来引用自身属性。`);
         }
-        if (deps.indexOf(dep) < 0) {
+        let deeps = [];
+        dep.checkDeepDependence(panel, deeps);
+        if (deeps.length > 0) {
+          if (!ignoreCircle) {
+            let depLoop = [dep.name];
+            let p = dep;
+            deeps.forEach(deep => {
+              depLoop.push(p.dependencies[deep].name);
+              p = p.dependencies[deep];
+            });
+            depLoop.push(depLoop[0]);
+            throw new Error(`检测到面板位置之间的循环依赖: ${depLoop.join(' -> ')}`);
+          } else {
+            circleReset = true;
+          }
+        } else if (deps.indexOf(dep) < 0) {
           deps.push(dep);
         }
         return m0.replace(m1, `__ohdash__.${m1}`);
       });
+
+      if (circleReset) {
+        expr = panel[attr].toString();
+      }
 
       expr = expr.replace(DASH_REGEXP, (m0, m1) => {
         return m0.replace(m1, `__ohdash__.${m1}`);
@@ -254,9 +276,6 @@ class Dashboard extends EventEmitter {
         dep.addDependent(item);
         return m0.replace(m1, `__ohdash__.${m1}`);
       });
-
-      console.log(expr);
-
       exprFn[attr] = this._parseExprFn(expr);
       try {
         exprFn[attr](this.__positionCalcContext__);
@@ -296,30 +315,13 @@ class Dashboard extends EventEmitter {
       this.__positionCalcContext__[name] = panel.position;
     }
   }
-  updatePanelPos(panel, newAttrs) {
+  updatePanelPos(panel, newAttrs, ignoreCircle = false) {
     let result;
     try {
-      result = this._parsePosAttrs(panel, newAttrs);
+      result = this._parsePosAttrs(panel, newAttrs, ignoreCircle);
     } catch(ex) {
       console.log(ex)
       return ex.message;
-    }
-
-    let newDeps = result.dependencies;
-    for(let i =0; i < newDeps.length; i++) {
-      let dep = newDeps[i];
-      let deeps = [];
-      dep.checkDeepDependence(panel, deeps);
-      if (deeps.length > 0) {
-        let depLoop = [dep.name];
-        let p = dep;
-        deeps.forEach(deep => {
-          depLoop.push(p.dependencies[deep].name);
-          p = p.dependencies[deep];
-        });
-        depLoop.push(depLoop[0]);
-        return `检测到面板位置之间的循环依赖: ${depLoop.join(' -> ')}`;
-      }
     }
 
     panel.dependencies.forEach(dPanel => {
@@ -337,9 +339,7 @@ class Dashboard extends EventEmitter {
       panel.addDependence(dep);
       dep.addDependent(panel);
     });
-    panel.layoutState = LayoutItem.LAYOUT_STATE.CALC;
     this._panelLayoutSequence = LayoutItem.calcLayoutSequence(this.panels);
-
     this._layout();
   }
   
@@ -356,6 +356,7 @@ class Dashboard extends EventEmitter {
         panel[attr] = panel.expr[attr](this.__positionCalcContext__);
         this.__positionCalcContext__[attr] = panel[attr];
       } catch(ex) {
+        console.log(ex);
         alert(ex.message);
       }
     });

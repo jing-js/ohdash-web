@@ -21,7 +21,7 @@ class TextPanel extends ohdash.BasePanel {
       return;
     }
     this.attr.text = val;
-    this._setStateCallback();
+    this.emit('update');
   }
   _parseText(text) {
     return {

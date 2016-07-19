@@ -9,10 +9,10 @@ export const POSITION_X_ATTRS = ['left', 'right', 'width'];
 export const POSITION_Y_ATTRS = ['top', 'bottom', 'height'];
 export const POSITION_ATTRS = POSITION_X_ATTRS.concat(POSITION_Y_ATTRS);
 export const POSITION_ATTR_NAMES = {
-  left: '左边距',
-  right: '右边距',
+  left: '左',
+  right: '右',
   width: '宽度',
-  top: '上边距',
-  bottom: '下边距',
+  top: '上',
+  bottom: '下',
   height: '高度'
 };
